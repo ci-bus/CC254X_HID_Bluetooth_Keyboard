@@ -747,8 +747,8 @@ static void uartCallback(uint8 port, uint8 event) {
         if(buffer[i] != '\n') {
             rxBuffer[rxBufferIndex] = buffer[i];
             rxBufferIndex++;
-        } else {
             rxBuffer[rxBufferIndex] = 0;
+        } else {
             processCommands();
             rxBufferIndex = 0;
             uartSend("1");
