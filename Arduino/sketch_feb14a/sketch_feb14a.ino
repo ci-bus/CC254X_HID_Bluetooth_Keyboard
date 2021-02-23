@@ -14,22 +14,18 @@ Command sets, chosen options need to be stored in non-volatile memory
 - BL<porcent> Level of battery
 - KP<keyCode> Press a key
 - KR<keyCode> Release a key
-- KPR<keyCode> Press ans release a key
+- KPR<keyCode> Press and release a key
 - CP<lowByte><highByte> Press consumer key
 - CR<lowByte><highByte> Release consumer key
 - CPR<lowByte><highByte> Press and release consumer key
 */
 
-CC254XBHID bhid(2, 3); //2 rx, 3 tx
+CC254XBHID bhid(48, 46); //2 rx, 3 tx
 
 bool wasPressed = false;
 uint8_t battery = 100;
 
 void setup() {
-  /*mySerial.begin(9600);
-  Serial.begin(9600);
-  while (!Serial) { ; }
-  */
   Serial.begin(57600);
   bhid.begin(57600);
   // Pin to GND to test key
@@ -37,15 +33,19 @@ void setup() {
   digitalWrite(8, HIGH);
 }
 
-int test = 1;
+int test = 0;
 
 void loop() {
 
   bool pressed = digitalRead(8) == LOW;
   if (pressed != wasPressed) {
     wasPressed = pressed;
-    
+
     if (test == 0) {
+      bhid.sendKey(pressed, 9);
+    }
+
+    if (test == 1) {
       if (!pressed) {
         bhid.sendKey(0x1e);
         bhid.sendKey(0x1f);
@@ -54,10 +54,6 @@ void loop() {
         bhid.sendKey(0x22);
         bhid.sendKey(0x23);
       }
-    } 
-    
-    if (test == 1) {
-      bhid.sendKey(pressed, 6);
     }
     
     if (test == 2 && battery > 0) {
@@ -70,9 +66,7 @@ void loop() {
       bhid.sendConsumerKey(pressed, 64, 0x00);     
     }
 
-    if (!pressed) {
-        delay(50);
-    }
+    delay(10);
   }
   
   if (int data = bhid.loop()) {

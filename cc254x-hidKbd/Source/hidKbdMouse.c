@@ -12,23 +12,17 @@ Last modified:  8/10/2014
 * INCLUDES
 */
 
-#include "bcomdef.h"
 #include "OSAL.h"
 #include "OSAL_PwrMgr.h"
 #include "OnBoard.h"
 #include "hal_led.h"
-#include "hal_key.h"
 #include "hal_uart.h"
 #include "gatt.h"
-#include "hci.h"
 #include "gapgattserver.h"
-#include "gattservapp.h"
 #include "gatt_profile_uuid.h"
-#include "linkdb.h"
 #include "peripheral.h"
 #include "gapbondmgr.h"
 #include "hidkbmservice.h"
-#include "devinfoservice.h"
 #include "hiddev.h"
 
 #include "osal_snv.h"
@@ -744,12 +738,17 @@ static void uartCallback(uint8 port, uint8 event) {
 
       for(i = 0; i < len; i++) 
       {
-        if(buffer[i] != '\n') {
+        if ((buffer[i] == 'K' || buffer[i] == 'S' || buffer[i] == 'C' || buffer[i] == 'B') && rxBuffer[0] != 'S' && rxBuffer[1] != 'N') {
+            rxBufferIndex = 0;
+            rxBuffer[rxBufferIndex] = buffer[i];
+            rxBufferIndex++;
+        } else if(buffer[i] != 0x0D && buffer[i] != 0x0A) {
             rxBuffer[rxBufferIndex] = buffer[i];
             rxBufferIndex++;
             rxBuffer[rxBufferIndex] = 0;
-        } else {
+        } else if (rxBufferIndex > 2) {
             processCommands();
+            memset(rxBuffer, 0, 24);
             rxBufferIndex = 0;
             uartSend("1");
         }

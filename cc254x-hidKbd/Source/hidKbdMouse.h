@@ -23,8 +23,8 @@ extern "C"
   */
   
   // Task Events
-#define START_DEVICE_EVT           0x0001
-#define SBP_PERIODIC_EVT           0x0002
+  #define START_DEVICE_EVT           0x0001
+  #define SBP_PERIODIC_EVT           0x0002
   
   /*********************************************************************
   * MACROS
